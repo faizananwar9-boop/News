@@ -33,7 +33,9 @@ def get_seen_ids(topic_slug: str) -> Set[str]:
     if supabase:
         try:
             response = supabase.table("seen_items").select("item_id").eq("topic_slug", topic_slug).execute()
-            return set(row["item_id"] for row in response.data)
+            if getattr(response, "error", None):
+                raise Exception(response.error)
+            return set(row["item_id"] for row in (response.data or []))
         except Exception as e:
             print(f"[db] Error loading from Supabase: {e}, falling back to local")
     
@@ -47,34 +49,37 @@ def get_seen_ids(topic_slug: str) -> Set[str]:
     return set()
 
 
-def mark_seen(topic_slug: str, items: List[Dict]):
+def mark_seen(topic_slug: str, items: List[Dict]) -> bool:
     """Mark items as seen for a topic."""
     supabase = _init_supabase()
     
     item_ids = [item["id"] for item in items if item.get("id")]
+    if not item_ids:
+        print("[db] No item IDs to mark as seen")
+        return True
+    
+    records = [
+        {
+            "topic_slug": topic_slug,
+            "item_id": item["id"],
+            "item_url": item.get("url", ""),
+            "item_title": item.get("title", ""),
+            "source_connector": item.get("connector", ""),
+            "source_label": item.get("source_label", "")
+        }
+        for item in items if item.get("id")
+    ]
     
     if supabase:
         try:
-            records = [
-                {
-                    "topic_slug": topic_slug,
-                    "item_id": item["id"],
-                    "item_url": item.get("url", ""),
-                    "item_title": item.get("title", ""),
-                    "source_connector": item.get("connector", ""),
-                    "source_label": item.get("source_label", "")
-                }
-                for item in items if item.get("id")
-            ]
-            
-            if records:
-                batch_size = 100
-                for i in range(0, len(records), batch_size):
-                    chunk = records[i:i + batch_size]
-                    supabase.table("seen_items").upsert(chunk).execute()
-                
-                print(f"[db] Marked {len(records)} items as seen in Supabase")
-                return
+            batch_size = 100
+            for i in range(0, len(records), batch_size):
+                chunk = records[i:i + batch_size]
+                response = supabase.table("seen_items").upsert(chunk).execute()
+                if getattr(response, "error", None):
+                    raise Exception(response.error)
+            print(f"[db] Marked {len(records)} items as seen in Supabase")
+            return True
         except Exception as e:
             print(f"[db] Error saving to Supabase: {e}, falling back to local")
     
@@ -84,9 +89,14 @@ def mark_seen(topic_slug: str, items: List[Dict]):
     try:
         with open(SEEN_FILE, "w") as f:
             json.dump(list(seen), f)
-        print(f"[db] Marked {len(item_ids)} items as seen locally")
+        if supabase:
+            print(f"[db] Marked {len(item_ids)} items as seen locally after Supabase failure")
+        else:
+            print(f"[db] Marked {len(item_ids)} items as seen locally")
+        return True
     except Exception as e:
         print(f"[db] Error saving local file: {e}")
+        return False
 
 
 def cleanup_old(topic_slug: str, days: int = 30):

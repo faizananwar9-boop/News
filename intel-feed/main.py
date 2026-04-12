@@ -27,14 +27,27 @@ def run(topic_file: str):
             channels = get_telegram_channels(config)
             
             if channels:
-                send_telegram(digest, channels)
-                logger.info(f"Sent digest to {len(channels)} channel(s)")
-                
-                if os.environ.get("GITHUB_ACTIONS") == "true":
-                    mark_seen(topic_slug, new_items)
-                    logger.info("Marked items as seen in database")
+                send_results = send_telegram(digest, channels)
+                successes = [r for r in send_results if r.get("success")]
+                failures = [r for r in send_results if not r.get("success")]
+
+                if successes:
+                    logger.info(f"Sent digest to {len(successes)} / {len(channels)} channel(s)")
+                    if failures:
+                        for failure in failures:
+                            logger.error(f"[telegram] Failed for {failure['chat_id']}: {failure.get('error')}")
+
+                    if os.environ.get("GITHUB_ACTIONS") == "true":
+                        if mark_seen(topic_slug, new_items):
+                            logger.info("Marked items as seen in database")
+                        else:
+                            logger.error("Failed to mark items as seen in database")
+                    else:
+                        logger.info("Local run - NOT marking items as seen")
                 else:
-                    logger.info("Local run - NOT marking items as seen")
+                    logger.error("Failed to send digest to any Telegram channel; skipping mark_seen")
+                    for failure in failures:
+                        logger.error(f"[telegram] Failed for {failure['chat_id']}: {failure.get('error')}")
             else:
                 logger.warning("No Telegram channels configured")
         else:
