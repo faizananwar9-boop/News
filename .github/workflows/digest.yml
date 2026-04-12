@@ -41,9 +41,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: cd intel-feed && python main.py ${{ matrix.topic }}
+      - name: Set artifact name
+        run: echo "ARTIFACT_NAME=logs-$(basename ${{ matrix.topic }})" >> $GITHUB_ENV
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs-${{ matrix.topic }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: intel-feed/intel_feed.log
