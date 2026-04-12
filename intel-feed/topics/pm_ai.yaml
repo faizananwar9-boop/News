@@ -1,0 +1,173 @@
+name: "PM x AI"
+description: "Product management and AI intersection"
+
+config:
+  telegram_channels:
+    - TELEGRAM_CHAT_PM_AI
+  digest_max_items: 25
+  cleanup_after_days: 30
+
+ranking:
+  recency_weight: 2.0
+  
+  high_value_keywords:
+    - keyword: "artificial intelligence"
+      weight: 2.0
+    - keyword: "machine learning"
+      weight: 2.0
+    - keyword: "llm"
+      weight: 2.0
+    - keyword: "large language model"
+      weight: 2.0
+    - keyword: "claude"
+      weight: 2.0
+    - keyword: "gpt"
+      weight: 2.0
+    - keyword: "openai"
+      weight: 2.0
+    - keyword: "anthropic"
+      weight: 2.0
+    - keyword: "ai agent"
+      weight: 2.0
+    - keyword: "agentic"
+      weight: 2.0
+    - keyword: "product strategy"
+      weight: 2.0
+    - keyword: "product management"
+      weight: 2.0
+    - keyword: "growth"
+      weight: 2.0
+    - keyword: "user research"
+      weight: 2.0
+    - keyword: "customer discovery"
+      weight: 2.0
+    - keyword: "revenue"
+      weight: 2.0
+    - keyword: "retention"
+      weight: 2.0
+    - keyword: "engagement"
+      weight: 2.0
+    - keyword: "conversion"
+      weight: 2.0
+    - keyword: "churn"
+      weight: 2.0
+    - keyword: "prompt engineering"
+      weight: 2.0
+    - keyword: "generative ai"
+      weight: 2.0
+    - keyword: "copilot"
+      weight: 2.0
+    - keyword: "automation"
+      weight: 2.0
+    - keyword: "growth"
+      weight: 2.0
+    - keyword: "user research"
+      weight: 2.0
+    - keyword: "productivity"
+  
+  medium_value_keywords:
+    - keyword: "startup"
+      weight: 0.5
+    - keyword: "founder"
+      weight: 0.5
+    - keyword: "venture"
+      weight: 0.5
+    - keyword: "funding"
+      weight: 0.5
+    - keyword: "scale"
+      weight: 0.5
+    - keyword: "hiring"
+      weight: 0.5
+    - keyword: "leadership"
+      weight: 0.5
+    - keyword: "design"
+      weight: 0.5
+    - keyword: "ux"
+      weight: 0.5
+    - keyword: "analytics"
+      weight: 0.5
+    - keyword: "metrics"
+      weight: 0.5
+    - keyword: "experiment"
+      weight: 0.5
+
+  bonus_patterns:
+    - pattern: "how to|guide|framework|playbook"
+      weight: 1.5
+    - pattern: "\\d+%|\\$\\d+|[0-9]+x"
+      weight: 1.0
+
+schedule:
+  morning_utc: "30 1 * * *"
+  evening_utc: "30 11 * * *"
+
+sources:
+  rss:
+    - url: "https://www.lennysnewsletter.com/feed"
+      label: "Lenny's Newsletter"
+    - url: "https://shreyasdoshi.substack.com/feed"
+      label: "Shreyas Doshi"
+    - url: "https://www.svpg.com/feed/"
+      label: "SVPG"
+    - url: "https://www.exponentialview.co/feed"
+      label: "Exponential View"
+    - url: "https://importai.substack.com/feed"
+      label: "Import AI"
+    - url: "https://www.tldrnewsletter.com/rss/ai"
+      label: "TLDR AI"
+    - url: "https://research.google/blog/rss/"
+      label: "Google Research"
+    - url: "https://cpoclub.com/feed/"
+      label: "CPO Club"
+    - url: "https://www.nngroup.com/feed/rss/"
+      label: "Nielsen Norman Group"
+
+  nitter:
+    - handle: "shreyas"
+      label: "Shreyas Doshi"
+    - handle: "lennysan"
+      label: "Lenny Rachitsky"
+    - handle: "emaborsa"
+      label: "Ema Rolof"
+    - handle: "kaboroevich"
+      label: "Karim Lakhani"
+    - handle: "johncutlefish"
+      label: "John Cutlefish"
+    - handle: "hnshah"
+      label: "Hiten Shah"
+    - handle: "scottbelsky"
+      label: "Scott Belsky"
+    - handle: "naval"
+      label: "Naval Ravikant"
+    - handle: "GaryMarcus"
+      label: "Gary Marcus"
+
+
+  youtube:
+    - channel_id: "UCnUYZLuoy1rq1aVMwx4aTzw"
+      label: "Lenny's Podcast"
+      max_items: 5
+    - channel_id: "UC5CFQxaUyUYzv3oQFU8Je4g"
+      label: "Shreyas Doshi"
+      max_items: 5
+    - channel_id: "UCiT1BmYvOBsEvU9iw0076"
+      label: "Mind The product"
+      max_items: 5
+
+digest_prompt: |
+  Format each of the 5 items into one-line hero insight with URL at the end.
+
+  REQUIRED OUTPUT FORMAT:
+  [Hero insight about what was built/achieved/discovered] — [Source Label] [Full URL]
+
+  EXAMPLE OUTPUT:
+  Anthropic built CASH framework achieving junior PM productivity in 4 hours instead of weeks — Lenny's Newsletter https://lennysnewsletter.com/p/anthropic-cash-framework...
+
+  RULES:
+  - Start directly with the insight (no "Item 1:" prefixes)
+  - Use action verbs: built, achieved, discovered, scaled, automated
+  - 12-18 words describing the hero insight
+  - MUST end with: — SourceName FullURL
+  - Include the full URL from the input, not shortened
+
+  INPUT ITEMS:
