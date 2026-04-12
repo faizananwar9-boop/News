@@ -3,6 +3,14 @@ import requests
 from typing import List
 from datetime import datetime, timezone
 
+def _escape_markdown(text: str) -> str:
+    """Escape special Markdown characters for Telegram."""
+    # Escape Markdown special characters: * _ ` [ ]
+    escapable = ['*', '_', '[', ']', '`']
+    for char in escapable:
+        text = text.replace(char, f'\\{char}')
+    return text
+
 def send_telegram(text: str, chat_ids: List[str]):
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     if not token:
@@ -10,7 +18,8 @@ def send_telegram(text: str, chat_ids: List[str]):
     
     hour = datetime.now(timezone.utc).hour
     label = "Morning" if hour < 12 else "Evening"
-    full_text = f"*{label} briefing*\n\n{text}"
+    escaped_text = _escape_markdown(text)
+    full_text = f"*{label} briefing*\n\n{escaped_text}"
     
     results = []
     for chat_id in chat_ids:
