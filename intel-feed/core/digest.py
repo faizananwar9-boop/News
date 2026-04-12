@@ -7,10 +7,10 @@ from core.logger import logger
 def filter_new(items: List[Dict], seen: set) -> List[Dict]:
     return [i for i in items if i["id"] and i["id"] not in seen]
 
-def build(new_items: List[Dict], prompt_template: str, config: Dict = None) -> Optional[str]:
+def build(new_items: List[Dict], prompt_template: str, config: Dict = None) -> tuple:
     if not new_items:
         logger.info("[build] No new_items provided")
-        return None
+        return None, []
     
     ranking_config = config.get('ranking', {}) if config else {}
     
@@ -35,9 +35,9 @@ def build(new_items: List[Dict], prompt_template: str, config: Dict = None) -> O
         logger.info(f"[build] LLM returned {len(raw_output)} characters")
     except Exception as e:
         logger.error(f"[build] LLM call failed: {e}")
-        return None
+        return None, []
     
     result = extract_and_format_robust(raw_output, top_items)
     line_count = result.count('\n') + 1 if result else 0
     logger.info(f"[build] Extracted {line_count} lines")
-    return result
+    return result, top_items

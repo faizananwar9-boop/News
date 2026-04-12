@@ -22,7 +22,7 @@ def run(topic_file: str):
             logger.info("No new content — skipping send.")
             return
         
-        digest = build(new_items, config["digest_prompt"], config)
+        digest, sent_items = build(new_items, config["digest_prompt"], config)
         if digest:
             channels = get_telegram_channels(config)
             
@@ -38,8 +38,8 @@ def run(topic_file: str):
                             logger.error(f"[telegram] Failed for {failure['chat_id']}: {failure.get('error')}")
 
                     if os.environ.get("GITHUB_ACTIONS") == "true":
-                        if mark_seen(topic_slug, new_items):
-                            logger.info("Marked items as seen in database")
+                        if mark_seen(topic_slug, sent_items):
+                            logger.info(f"Marked {len(sent_items)} items as seen in database")
                         else:
                             logger.error("Failed to mark items as seen in database")
                     else:
