@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: list
         run: |
+          cd intel-feed
           files=$(ls topics/*.yaml | jq -R . | jq -sc .)
           echo "topics=$files" >> $GITHUB_OUTPUT
 
@@ -31,7 +32,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install deps
-        run: pip install -r requirements.txt
+        run: cd intel-feed && pip install -r requirements.txt
       - name: Run digest
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -39,10 +40,10 @@ jobs:
           TELEGRAM_CHAT_PM_AI: ${{ secrets.TELEGRAM_CHAT_PM_AI }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: python main.py ${{ matrix.topic }}
+        run: cd intel-feed && python main.py ${{ matrix.topic }}
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: logs-${{ matrix.topic }}
-          path: intel_feed.log
+          path: intel-feed/intel_feed.log
