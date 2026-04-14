@@ -37,7 +37,7 @@ def test_and_show_output(topic_file="topics/pm_ai.yaml"):
         return
 
     # Step 2: Filter
-    filtered_items = filter_items(new_items)
+    filtered_items = filter_items(new_items, config.get('ranking', {}))
     print(f"[FILTER] After removing spam/dev/duplicates: {len(filtered_items)}")
 
     if not filtered_items:

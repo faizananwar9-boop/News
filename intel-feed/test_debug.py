@@ -27,7 +27,7 @@ def test_debug(topic_file="topics/pm_ai.yaml"):
 
     # Debug: Check filtering
     print("\n--- STEP 1: FILTER ---")
-    filtered_items = filter_items(new_items)
+    filtered_items = filter_items(new_items, config.get('ranking', {}))
     print(f"After filtering: {len(filtered_items)} items")
     if not filtered_items:
         print("WARNING: All items were filtered out!")

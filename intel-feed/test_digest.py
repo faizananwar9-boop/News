@@ -42,8 +42,6 @@ def test_digest_dry_run(topic_file="topics/pm_ai.yaml"):
         print(f"Items after filter_new: {len(new_items)}")
         # Try to understand why
         from core.digest import filter_items
-        filtered = filter_items(new_items)
-        print(f"Items after filter_items: {len(filtered) if filtered else 0}")
-
+    filtered = filter_items(new_items, config.get('ranking', {}))
 if __name__ == "__main__":
     test_digest_dry_run()

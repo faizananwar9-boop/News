@@ -4,7 +4,7 @@ description: "Product management and AI intersection"
 config:
   telegram_channels:
     - TELEGRAM_CHAT_PM_AI
-  digest_max_items: 25
+  digest_max_items: 50
   cleanup_after_days: 30
 
 ranking:
@@ -91,6 +91,15 @@ ranking:
     - keyword: "experiment"
       weight: 0.5
 
+  negative_keywords:
+    - "birthday wishes"
+    - "happy birthday"
+    - "b'day"
+    - "bday"
+    - "best wishes"
+    - "wish you"
+    - "congratulations"
+
   bonus_patterns:
     - pattern: "how to|guide|framework|playbook"
       weight: 1.5
@@ -121,6 +130,12 @@ sources:
       label: "CPO Club"
     - url: "https://www.nngroup.com/feed/rss/"
       label: "Nielsen Norman Group"
+    - url: "https://technologyreview.com/feed"
+      label: "MIT Technology Review"
+    - url: "https://openai.com/blog/rss.xml"
+      label: "OpenAI Blog"
+    - url: "https://huggingface.co/blog/feed.xml"
+      label: "Hugging Face Blog"
 
   nitter:
     - handle: "shreyas"

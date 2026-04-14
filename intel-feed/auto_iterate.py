@@ -95,7 +95,7 @@ config = load_topic_config("topics/pm_ai.yaml")
 all_items = fetch_all(config)
 seen = get_seen_ids(config["slug"])
 new_items = filter_new(all_items, seen)
-filtered = filter_items(new_items)
+filtered = filter_items(new_items, config.get('ranking', {}))
 sorted_items = _sort_items(filtered)
 
 from core.digest import _format_item_for_prompt
